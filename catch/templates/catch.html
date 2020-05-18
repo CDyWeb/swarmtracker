@@ -13,6 +13,15 @@
     <h5>
        Current swarm list
     </h5>
+    <p class="text-right">
+        Max Distance:
+        <select>
+            <option {% if request.user.max_distance_km == 5 %}selected{% endif %}>5 KM</option>
+            <option {% if request.user.max_distance_km == 10 %}selected{% endif %}>10 KM</option>
+            <option {% if request.user.max_distance_km == 20 %}selected{% endif %}>20 KM</option>
+            <option {% if request.user.max_distance_km == 50 %}selected{% endif %}>50 KM</option>
+        </select>
+    </p>
     <table class="table">
         <thead>
             <tr>
