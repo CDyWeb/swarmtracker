@@ -1,0 +1,8 @@
+django
+dj-database-url
+gunicorn
+python-dotenv
+psycopg2-binary
+auth0-python
+pyjwt
+cryptography

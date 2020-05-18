@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block main %}
+    <div class="row">
+        <div class="col-sm-1">
+            <img class="img-fluid" src="https://limestonebeekeepersguild.files.wordpress.com/2019/04/cropped-beekeepersguildthick.png?w=1480&h=1112">
+        </div><div class="col-sm-6" style="padding-top: 10px;">
+            <h3>Swarm Tracker</h3>
+        </div>
+    </div>
+    <hr>
+    <h1>Report a Swarm</h1>
+    <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem
+        ipsum </p>
+    <form>
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="">Name</label>
+            <input type="text" class="form-control" id="" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+            <label for="">Email</label>
+            <input type="email" class="form-control" id="" placeholder="Your email address" required>
+        </div>
+        <div class="form-group">
+            <label for="">Phone</label>
+            <input type="tel" class="form-control" id="" placeholder="Your phone number" required>
+        </div>
+        <div class="form-group">
+            <label for="">Swarm Location</label>
+            <div id="map" style="width: 100%;height: 300px;"></div>
+            <div class="text-right"><small><a href="#" onclick="return locateMe()" id="ahref-locate-me">Locate me</a></small></div>
+        </div>
+        <div class="form-group">
+            <label for="">Swarm Location Details</label>
+            <textarea class="form-control" placeholder="Provide details about the location" style="height:150px"></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-lg btn-primary">
+                Submit
+            </button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_NdhKo8z6dAnomohyzYKoSmrkQ0JNjoM"></script>
+<script src="https://unpkg.com/location-picker/dist/location-picker.min.js"></script>
+<script>
+var locationPicker = new locationPicker('map',
+    {
+        lat: 44.2312,
+        lng: -76.4860
+    }, {
+        zoom: 15,
+        gestureHandling: 'greedy'
+    }
+);
+function locateMe() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        locationPicker.map.setCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        });
+    }, function(e) {
+        switch(e.code) {
+            case 1: $('#ahref-locate-me').replaceWith('Getting your location: permission denied'); break;
+            case 2: $('#ahref-locate-me').replaceWith('Getting your location: position unavailable'); break;
+            case 3: $('#ahref-locate-me').replaceWith('Getting your location: timeout'); break;
+        }
+        locationPicker.map.setCenter();
+    });
+  } else {
+    $('#ahref-locate-me').replaceWith("Geolocation is not supported by this browser");
+  }
+  return false;
+}
+$(locateMe);
+</script>
+{% endblock %}
