@@ -10,19 +10,17 @@ import requests
 
 from auth0.v3 import Auth0Error
 from auth0.v3.authentication import GetToken
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
-from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, get_language
-from django.utils import translation
 from django.views import View
 from django.urls import reverse
 from jwt.algorithms import RSAAlgorithm
+from swarm.models import SwarmUser as User
 
 from . import post_auth0_callback, post_auth0_tokens, settings
 
@@ -231,6 +229,7 @@ class Auth0Callback(Auth0View):
                 user = User(username=user_info['username'])
                 user.is_staff = False
                 user.is_superuser = False
+                user.auth0_profile = user_info.get('auth0_profile')
                 user.save()
 
             user.email = user_info['email']

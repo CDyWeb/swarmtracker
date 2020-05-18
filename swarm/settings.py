@@ -120,6 +120,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = 'swarm.SwarmUser'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -130,11 +132,11 @@ APPEND_SLASH = False
 
 AUTH0_DOMAIN = 'cdyweb.auth0.com'
 AUTH0_AUDIENCE = 'https://cdyweb.auth0.com/userinfo'
-AUTH0_CLIENT_ID = 'QGF2VYT5oJugGwXM7fFOFojejro9wxfX'
-AUTH0_SECRET = 'rz4zZKLKhN9U1xCTRDQmKFIACYWTk0QWpIpt0G_GGXq15NVY3_DD4Bq2YHS4cvZv'
-AUTH0_FORCE_HTTPS = False
+AUTH0_CLIENT_ID = os.getenv('AUTH0_CLIENT_ID', '')
+AUTH0_SECRET = os.getenv('AUTH0_SECRET', '')
+AUTH0_FORCE_HTTPS = os.getenv('SECURE_SSL_REDIRECT', '1') == '1'
 
-MAPQUESTAPI_KEY = os.getenv('MAPQUESTAPI_KEY', 'LrFMpHybXXi2Tc5IjY6fzyZxmizTCAKd')
+MAPQUESTAPI_KEY = os.getenv('MAPQUESTAPI_KEY', '')
 
-RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY', '6LflQfkUAAAAAD9qBbTMGbbi0MzwT0v8kvetjH79')
-RECAPTCHA_SECRET = os.getenv('RECAPTCHA_SECRET', '6LflQfkUAAAAAPXE8MwuJCGDNJLL6rgZz3cyyEQw')
+RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY', '')
+RECAPTCHA_SECRET = os.getenv('RECAPTCHA_SECRET', '')

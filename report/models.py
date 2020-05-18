@@ -1,10 +1,10 @@
 import uuid
 
-from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.urls import reverse
 
+from swarm.models import SwarmUser
 
 status_choices = {
     'new': 'New',
@@ -17,7 +17,7 @@ class SwarmReport(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    reporter = models.ForeignKey(to=User, null=True, default=None, blank=True, on_delete=models.SET_NULL)
+    reporter = models.ForeignKey(to=SwarmUser, null=True, default=None, blank=True, on_delete=models.SET_NULL)
     status = models.CharField(max_length=255, default='new', blank=True, choices=[(k, v) for k, v in status_choices.items()])
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)

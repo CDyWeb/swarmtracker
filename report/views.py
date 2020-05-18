@@ -2,10 +2,9 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth import get_user
-from django.contrib.auth.models import User
+from swarm.models import SwarmUser as User
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.views import View
 from report.models import SwarmReport
 import requests
@@ -27,7 +26,6 @@ class ReportView(View):
     def get(self, request):
         user: User = get_user(request)
         report = SwarmReport(
-            reporter=user,
             name=f'{user.first_name} {user.last_name}' if user and user.is_authenticated else '',
             email=user.email if user and user.is_authenticated else '',
             location='',
@@ -55,6 +53,9 @@ class ReportView(View):
 
         form = ReportForm(data=posted_data)
         if form.is_valid():
+            user = get_user(request)
+            if user.is_authenticated:
+                form.instance.reporter = user
             swarm: SwarmReport = form.save()
             request.session['report_id'] = str(swarm.id)
 
