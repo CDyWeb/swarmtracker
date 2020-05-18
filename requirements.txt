@@ -6,3 +6,4 @@ psycopg2-binary
 auth0-python
 pyjwt
 cryptography
+requests

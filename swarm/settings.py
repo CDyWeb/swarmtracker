@@ -56,6 +56,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', '1') == '1'
+
 ROOT_URLCONF = 'swarm.urls'
 
 TEMPLATES = [
@@ -130,3 +133,8 @@ AUTH0_AUDIENCE = 'https://cdyweb.auth0.com/userinfo'
 AUTH0_CLIENT_ID = 'QGF2VYT5oJugGwXM7fFOFojejro9wxfX'
 AUTH0_SECRET = 'rz4zZKLKhN9U1xCTRDQmKFIACYWTk0QWpIpt0G_GGXq15NVY3_DD4Bq2YHS4cvZv'
 AUTH0_FORCE_HTTPS = False
+
+MAPQUESTAPI_KEY = os.getenv('MAPQUESTAPI_KEY', 'LrFMpHybXXi2Tc5IjY6fzyZxmizTCAKd')
+
+RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY', '6LflQfkUAAAAAD9qBbTMGbbi0MzwT0v8kvetjH79')
+RECAPTCHA_SECRET = os.getenv('RECAPTCHA_SECRET', '6LflQfkUAAAAAPXE8MwuJCGDNJLL6rgZz3cyyEQw')

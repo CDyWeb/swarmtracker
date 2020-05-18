@@ -7,17 +7,29 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="icon" href="https://limestonebeekeepersguild.files.wordpress.com/2018/01/cropped-cropped-cropped-15232050_1284651724938581_6658553241936149094_n1.jpg?w=32" sizes="32x32" />
+    <link rel="icon" href="https://limestonebeekeepersguild.files.wordpress.com/2018/01/cropped-cropped-cropped-15232050_1284651724938581_6658553241936149094_n1.jpg?w=192" sizes="192x192" />
+    <link rel="apple-touch-icon" href="https://limestonebeekeepersguild.files.wordpress.com/2018/01/cropped-cropped-cropped-15232050_1284651724938581_6658553241936149094_n1.jpg?w=180" />
+    <meta name="msapplication-TileImage" content="https://limestonebeekeepersguild.files.wordpress.com/2018/01/cropped-cropped-cropped-15232050_1284651724938581_6658553241936149094_n1.jpg?w=270" />
     <style>
-        xbody {
-          padding-top: 60px;
-        }
+        main { padding-top: 2em }
     </style>
     </head>
     <body>
         {% include 'nav.html' %}
-
         <main role="main" class="container">
-            {% block main %}{% endblock %}
+        {% block main_plus_logo %}
+            <div class="row">
+                <div class="col-sm-1">
+                    <img class="img-fluid" src="https://limestonebeekeepersguild.files.wordpress.com/2019/04/cropped-beekeepersguildthick.png?w=1480&h=1112">
+                </div><div class="col-sm-6" style="padding-top: 10px;">
+                    <h3>Swarm Tracker</h3>
+                </div>
+            </div>
+            <hr>
+            {% block main %}
+            {% endblock %}
+            {% endblock %}
         </main>
 
         <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>

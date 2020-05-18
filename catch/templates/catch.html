@@ -1,25 +1,82 @@
 {% extends 'base.html' %}
 {% block main %}
-    <div class="row">
-        <div class="col-sm-12 text-center">
-            <img class="img-fluid col-sm-3" src="https://limestonebeekeepersguild.files.wordpress.com/2019/04/cropped-beekeepersguildthick.png?w=1480&h=1112">
-            <h1>Swarm Tracker</h1>
-        </div>
-    </div>
-    <p>&nbsp;</p>
-    <div class="row">
-        <div class="col-sm-12 text-center">
-            <button class="btn btn-lg btn-primary col-sm-3">
-                Report a Swarm
-            </button>
-        </div>
-    </div>
-    <p>&nbsp;</p>
-    <div class="row">
-        <div class="col-sm-12 text-center">
-            <button class="btn btn-lg btn-warning col-sm-3">
-                Catch a Swarm
-            </button>
-        </div>
-    </div>
+    <h4>Catch a Swarm</h4>
+    <p>
+        This section of the Swarm Tracker allows you to view, track and adopt reported swarms.
+    </p>
+    {% if not request.user.is_authenticated %}
+    <p>
+        Before you can continue, you need to <a href="/login">Sign in</a> or <a href="/login">Register</a> as a new
+        Swarm Catcher.
+    </p>
+    {% else %}
+    <h5>
+       Current swarm list
+    </h5>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Report Date</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>Distance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for swarm in swarms %}
+                <tr>
+                    <td>{{ swarm.created_at }}</td>
+                    <td>{{ swarm.status_str }}</td>
+                    <td>{{ swarm.location_str }}</td>
+                    <td class="td-distance" data-latitude="{{ swarm.latitude }}" data-longitude="{{ swarm.longitude }}"></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+function distance(lat1, lon1, lat2, lon2, unit) {
+	if ((lat1 === lat2) && (lon1 === lon2)) {
+		return 0;
+	}
+	else {
+		var radlat1 = Math.PI * lat1/180;
+		var radlat2 = Math.PI * lat2/180;
+		var theta = lon1-lon2;
+		var radtheta = Math.PI * theta/180;
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		if (dist > 1) {
+			dist = 1;
+		}
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit==="K") { dist = dist * 1.609344 }
+		if (unit==="N") { dist = dist * 0.8684 }
+		return dist;
+	}
+}
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+        var my_loc = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        $('.td-distance').each(function (i, td) {
+            var $td = $(td),
+                dist=distance(
+                    position.coords.latitude,
+                    position.coords.longitude,
+                    $td.data('latitude'),
+                    $td.data('longitude'),
+                    'K'
+                );
+            $td.text(dist.toFixed(1) + ' KM')
+        });
+    });
+}
+</script>
 {% endblock %}

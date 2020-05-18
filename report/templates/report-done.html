@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load base %}
+{% block main %}
+<h1>Swarm Report</h1>
+<p>
+    Thank you for your Swarm Report. We have created a unique link for this report. You can visit this link any time
+    to check the status and to add photos or comments. When a swarm catcher is assigned, you can also use this link
+    to chat with the swarm catcher.
+</p>
+<h4>
+    The unique link for this Swarm Report is:
+</h4>
+<p>
+    <a href="{% build_absolute_uri swarm %}">
+        {% build_absolute_uri swarm %}
+    </a>
+</p>
+
+{% endblock %}

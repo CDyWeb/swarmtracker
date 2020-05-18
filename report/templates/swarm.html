@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block main %}
+    <p>
+        Swarm Report
+        <a href="{{ request.build_absolute_uri }}{{ swarm.link }}">
+            {{ swarm.pk }}
+        </a>
+    </p>
+    <p>asd</p>
+{% endblock %}

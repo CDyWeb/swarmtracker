@@ -1,43 +1,47 @@
 {% extends 'base.html' %}
 {% block main %}
-    <div class="row">
-        <div class="col-sm-1">
-            <img class="img-fluid" src="https://limestonebeekeepersguild.files.wordpress.com/2019/04/cropped-beekeepersguildthick.png?w=1480&h=1112">
-        </div><div class="col-sm-6" style="padding-top: 10px;">
-            <h3>Swarm Tracker</h3>
-        </div>
-    </div>
-    <hr>
     <h1>Report a Swarm</h1>
     <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem
         ipsum </p>
-    <form>
+    {% if errors %}
+    <div class="card border-danger">
+    <div class="card-header bg-danger">
+        Errors
+        </div><div class="card-body">
+          {% for e in errors %}
+          <dd>{{ e }}</dd>
+          {% endfor %}
+      </div>
+    </div>
+    <p>&nbsp;</p>
+    {% endif %}
+    <form method="post" id="report-form">
         {% csrf_token %}
         <div class="form-group">
-            <label for="">Name</label>
-            <input type="text" class="form-control" id="" placeholder="Your name" required>
+            <label for="">Name <sup class="text-danger">*</sup></label>
+            <input type="text" class="form-control" id="" placeholder="Your name" required value="{{ report.name }}" name="name">
         </div>
         <div class="form-group">
-            <label for="">Email</label>
-            <input type="email" class="form-control" id="" placeholder="Your email address" required>
+            <label for="">Email <sup class="text-danger">*</sup></label>
+            <input type="email" class="form-control" id="" placeholder="Your email address" required value="{{ report.email }}" name="email">
         </div>
         <div class="form-group">
             <label for="">Phone</label>
-            <input type="tel" class="form-control" id="" placeholder="Your phone number" required>
+            <input type="tel" class="form-control" id="" placeholder="Your phone number" value="{{ report.phone }}" name="phone">
         </div>
         <div class="form-group">
-            <label for="">Swarm Location</label>
+            <label for="">Swarm Location <sup class="text-danger">*</sup></label>
             <div id="map" style="width: 100%;height: 300px;"></div>
             <div class="text-right"><small><a href="#" onclick="return locateMe()" id="ahref-locate-me">Locate me</a></small></div>
         </div>
         <div class="form-group">
-            <label for="">Swarm Location Details</label>
-            <textarea class="form-control" placeholder="Provide details about the location" style="height:150px"></textarea>
+            <label for="">Swarm Location Details (e.g. Address)</label>
+            <textarea class="form-control" placeholder="Provide details about the location" style="height:150px" name="location">{{ report.location }}</textarea>
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-lg btn-primary">
+            <a href="#" class="btn btn-lg btn-primary" onclick="return submitMe()">
                 Submit
-            </button>
+            </a>
         </div>
     </form>
 
@@ -46,20 +50,30 @@
 {% block script %}
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_NdhKo8z6dAnomohyzYKoSmrkQ0JNjoM"></script>
 <script src="https://unpkg.com/location-picker/dist/location-picker.min.js"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LflQfkUAAAAAD9qBbTMGbbi0MzwT0v8kvetjH79"></script>
 <script>
-var locationPicker = new locationPicker('map',
-    {
-        lat: 44.2312,
-        lng: -76.4860
-    }, {
-        zoom: 15,
-        gestureHandling: 'greedy'
+window.locationPickerObj = false;
+window.defaultLocation = {
+    lat: 44.2312,
+    lng: -76.4860
+};
+
+function initLocationPicker(loc) {
+    if (window.locationPickerObj) {
+        window.locationPickerObj.map.setCenter(loc);
+    } else {
+        // see https://cyphercodes.github.io/location-picker/
+        window.locationPickerObj = new locationPicker('map', loc, {
+            zoom: 15,
+            gestureHandling: 'greedy'
+        });
     }
-);
+}
+
 function locateMe() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-        locationPicker.map.setCenter({
+        initLocationPicker({
             lat: position.coords.latitude,
             lng: position.coords.longitude
         });
@@ -69,13 +83,28 @@ function locateMe() {
             case 2: $('#ahref-locate-me').replaceWith('Getting your location: position unavailable'); break;
             case 3: $('#ahref-locate-me').replaceWith('Getting your location: timeout'); break;
         }
-        locationPicker.map.setCenter();
+        initLocationPicker(defaultLocation);
     });
   } else {
     $('#ahref-locate-me').replaceWith("Geolocation is not supported by this browser");
+    initLocationPicker(defaultLocation);
   }
   return false;
 }
+
 $(locateMe);
+
+function submitMe() {
+    grecaptcha.execute('{{ recaptcha_key }}', {action: 'report'}).then(function(token) {
+        var pos = window.locationPickerObj.getMarkerPosition();
+        $('#report-form')
+            .append('<input type="hidden" name="recaptcha" value="' + token + '">')
+            .append('<input type="hidden" name="latitude" value="' + pos.lat + '">')
+            .append('<input type="hidden" name="longitude" value="' + pos.lng + '">')
+            .submit();
+    });
+    return false;
+}
+
 </script>
 {% endblock %}

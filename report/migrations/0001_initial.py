@@ -20,4 +20,7 @@ class Migration(migrations.Migration):
                 ('phone', models.CharField(blank=True, default=None, max_length=255, null=True)),
             ],
         ),
+        migrations.DeleteModel(
+            name='SwarmReport'
+        )
     ]
