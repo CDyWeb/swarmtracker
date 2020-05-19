@@ -7,3 +7,4 @@ auth0-python
 pyjwt
 cryptography
 requests
+cloudinary

@@ -1,5 +1,6 @@
 import uuid
 
+from cloudinary.models import CloudinaryField
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.urls import reverse
@@ -28,6 +29,10 @@ class SwarmReport(models.Model):
     location_reverse = JSONField(null=True, default=None, blank=True)
 
     def __str__(self):
+        return self.uri
+
+    @property
+    def uri(self):
         return reverse('swarm-details', kwargs={'uuid': self.id})
 
     def status_str(self):
@@ -63,3 +68,40 @@ class SwarmReport(models.Model):
             self.location_reverse.get('street'),
             self.location_reverse.get('adminArea5')
         ])
+
+    @property
+    def location_map(self):
+        return self.location_reverse.get('mapUrl').replace('&size=225,160&', '&size=480,320&')
+
+
+class SwarmNote(models.Model):
+    author = models.ForeignKey(to=SwarmUser, on_delete=models.SET_NULL, blank=True, null=True, default=None)
+    swarm = models.ForeignKey(to=SwarmReport, on_delete=models.PROTECT, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+    note = models.TextField()
+
+    @property
+    def author_or_contact(self):
+        return self.author.first_name or self.swarm.name
+
+
+class SwarmPhoto(models.Model):
+    swarm = models.ForeignKey(to=SwarmReport, on_delete=models.PROTECT, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+    image = CloudinaryField('image')
+
+    """ Informative name for model """
+    def __unicode__(self):
+        try:
+            public_id = self.image.public_id
+        except AttributeError:
+            public_id = ''
+        return "Photo <%s>" % public_id
+
+    @property
+    def src_100(self):
+        return self.image.build_url(width=100, height=65, crop="fill")
+
+    @property
+    def src_800(self):
+        return self.image.build_url(width=800, height=600, crop="limit")

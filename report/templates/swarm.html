@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cloudinary %}
 {% block main %}
     <p>
         Swarm Report
@@ -6,5 +7,122 @@
             {{ swarm.pk }}
         </a>
     </p>
-    <p>asd</p>
+
+    <div class="row">
+        <div class="col-sm-8">
+
+            <table class="table">
+                <tr>
+                    <th>Report date</th>
+                    <td>{{ swarm.created_at }}</td>
+                </tr>
+                <tr>
+                    <th>Contact name</th>
+                    <td>{{ swarm.name }}</td>
+                </tr>
+                <tr>
+                    <th>Contact email</th>
+                    <td>{{ swarm.email }}</td>
+                </tr>
+                <tr>
+                    <th>Contact phone</th>
+                    <td>{{ swarm.phone }}</td>
+                </tr>
+                <tr>
+                    <th>Location details</th>
+                    <td>{{ swarm.location }}</td>
+                </tr>
+                <tr>
+                    <th>Map</th>
+                    <td>
+                        {{ swarm.location_str }}<br>
+                        <img src="{{ swarm.location_map }}" class="img-fluid">
+                    </td>
+                </tr>
+            </table>
+
+            <hr />
+
+            <h5>Notes</h5>
+            {% for n in notes %}
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>{{ n.note }}</p>
+                    <p><small>{{ n.create_time }} by {{ n.author_or_contact }}</small></p>
+                </div>
+            </div>
+            <hr />
+            {% endfor %}
+            <form method="post">
+                {% csrf_token %}
+                <p>
+                    <textarea class="form-control" name="note" required="required"></textarea>
+                </p>
+                <button class="btn btn-primary">Add note</button>
+            </form>
+
+        </div>
+        <div class="col-sm-4">
+            {% if pictures %}
+            <h5>Pictures ({{ pictures.count }})</h5>
+            <div class="row">
+                {% for p in pictures %}
+                <div class="col-sm-4" style="padding-bottom:15px;">
+                    <a href="{{ p.src_800 }}">
+                        <img src="{{ p.src_100 }}" class="img-fluid img-thumbnail">
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <h5>Pictures</h5>
+            <p>No pictures yet</p>
+            {% endif %}
+
+            <hr />
+
+            <div id="direct_upload">
+                <h5>Upload pictures</h5>
+                <form action="{{  swarm.uri }}/upload" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% cloudinary_direct_upload_field request=request %}
+                </form>
+                <div class="status">
+                    <span class="status_value"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block script %}
+{#{% cloudinary_includes %}#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.28.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.28.0/js/jquery.iframe-transport.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.28.0/js/jquery.fileupload.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cloudinary-jquery-file-upload/2.8.2/cloudinary-jquery-file-upload.js"></script>
+{% cloudinary_js_config %}
+<script>
+
+$(function () {
+$('#direct_upload input[type="file"]')
+.cloudinary_fileupload({
+  dropZone: '#direct_upload',
+  start: function () {
+      $('#id_image').hide();
+  },
+  progress: function () {
+    $('.status_value').text('Uploading...');
+  },
+})
+.on('cloudinarydone', function (e, data) {
+    $.post(this.form.action, $(this.form).serialize()).always(function (result, status, jqxhr) {
+      window.location.href = window.location.href;
+    });
+});
+});
+
+</script>
 {% endblock %}

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'home',
     'report',
     'catch',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,9 @@ MAPQUESTAPI_KEY = os.getenv('MAPQUESTAPI_KEY', '')
 
 RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY', '')
 RECAPTCHA_SECRET = os.getenv('RECAPTCHA_SECRET', '')
+
+CLOUDINARY={
+    'cloud_name': os.getenv('CLOUDINARY_CLOUD_NAME', ''),
+    'api_key': os.getenv('CLOUDINARY_API_KEY', ''),
+    'api_secret': os.getenv('CLOUDINARY_API_SECRET', ''),
+}

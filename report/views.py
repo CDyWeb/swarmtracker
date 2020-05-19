@@ -1,13 +1,27 @@
+import json
 from decimal import Decimal
 
+from cloudinary.forms import CloudinaryJsFileField
 from django.conf import settings
 from django.contrib.auth import get_user
+from django.http import HttpResponse
+
 from swarm.models import SwarmUser as User
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
 from django.views import View
-from report.models import SwarmReport
+from report.models import SwarmReport, SwarmPhoto, SwarmNote
 import requests
+
+
+class PhotoForm(ModelForm):
+    class Meta:
+        model = SwarmPhoto
+        fields = '__all__'
+
+
+class PhotoDirectForm(PhotoForm):
+    image = CloudinaryJsFileField()
 
 
 class ReportForm(ModelForm):
@@ -96,6 +110,20 @@ class ReportDoneView(View):
         })
 
 
+def direct_upload_complete(request, uuid):
+    form = PhotoDirectForm(request.POST.dict())
+    if form.is_valid():
+        # Create a model instance for uploaded image using the provided data
+        instance: SwarmPhoto = form.save(commit=False)
+        instance.swarm = SwarmReport.objects.get(pk=uuid)
+        instance.save()
+        ret = dict(photo_id=instance.id)
+    else:
+        ret = dict(errors=form.errors)
+
+    return HttpResponse(json.dumps(ret), content_type='application/json')
+
+
 class ReportDetailsView(View):
     def get(self, request, uuid):
         try:
@@ -105,4 +133,15 @@ class ReportDetailsView(View):
 
         return render(request, 'swarm.html', context={
             'swarm': swarm,
+            'notes': SwarmNote.objects.filter(swarm=swarm).order_by('-create_time'),
+            'pictures': SwarmPhoto.objects.filter(swarm=swarm).order_by('create_time')
         })
+
+    def post(self, request, uuid):
+        author = get_user(request)
+        SwarmNote.objects.create(
+            swarm=SwarmReport.objects.get(pk=uuid),
+            author=author if author.is_authenticated else None,
+            note=request.POST.dict().get('note')
+        )
+        return redirect(request.path)
