@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth import get_user
 from django.http import HttpResponse
 
+from swarm import RecaptchaView
 from swarm.models import SwarmUser as User
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
@@ -36,7 +37,7 @@ class ReportForm(ModelForm):
         model = SwarmReport
 
 
-class ReportView(View):
+class ReportView(RecaptchaView):
     def get(self, request):
         user: User = get_user(request)
         report = SwarmReport(
@@ -50,22 +51,7 @@ class ReportView(View):
         })
 
     def post(self, request):
-        posted_data = request.POST.dict()
-        if 'recaptcha' not in posted_data:
-            return redirect(request.path)
-
-        try:
-            resp = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
-                'secret': settings.RECAPTCHA_SECRET,
-                'response': posted_data.get('recaptcha'),
-            })
-            resp.raise_for_status()
-            if not resp.json().get('success'):
-                return redirect(request.path)
-        except:
-            return redirect(request.path)
-
-        form = ReportForm(data=posted_data)
+        form = ReportForm(data=request.POST.dict())
         if form.is_valid():
             user = get_user(request)
             if user.is_authenticated:

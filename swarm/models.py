@@ -4,7 +4,7 @@ from django.db import models
 
 
 class SwarmUser(AbstractUser):
-    auth0_profile = JSONField(null=True)
+    zip = models.CharField(max_length=255, null=True, blank=True, default=None)
     latitude = models.DecimalField("Latitude", max_digits=10, decimal_places=6, null=True, default=None, blank=True)
     longitude = models.DecimalField("Longitude", max_digits=10, decimal_places=6, null=True, default=None, blank=True)
     max_distance_km = models.IntegerField(null=False, default=20)

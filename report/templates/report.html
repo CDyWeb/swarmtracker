@@ -39,7 +39,7 @@
             <textarea class="form-control" placeholder="Provide details about the location" style="height:150px" name="location">{{ report.location }}</textarea>
         </div>
         <div class="form-group">
-            <a href="#" class="btn btn-lg btn-primary" onclick="return submitMe()">
+            <a href="#" class="btn btn-lg btn-primary" id="ahref-submit">
                 Submit
             </a>
         </div>
@@ -48,9 +48,10 @@
 {% endblock %}
 
 {% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_NdhKo8z6dAnomohyzYKoSmrkQ0JNjoM"></script>
 <script src="https://unpkg.com/location-picker/dist/location-picker.min.js"></script>
-<script src="https://www.google.com/recaptcha/api.js?render=6LflQfkUAAAAAD9qBbTMGbbi0MzwT0v8kvetjH79"></script>
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
 <script>
 window.locationPickerObj = false;
 window.defaultLocation = {
@@ -70,41 +71,56 @@ function initLocationPicker(loc) {
     }
 }
 
-function locateMe() {
-  if (navigator.geolocation) {
+function getBrowserLocation(success, failure) {
+    var fromCookie = $.cookie('location');
+    if (fromCookie) {
+        success(JSON.parse(fromCookie));
+    }
+    if (!navigator.geolocation) {
+        failure({code:0});
+    }
     navigator.geolocation.getCurrentPosition(function(position) {
-        initLocationPicker({
+        var location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
-        });
-    }, function(e) {
+        };
+        $.cookie('location', JSON.stringify(location));
+        success(location)
+    }, failure);
+}
+
+function locateMe() {
+    getBrowserLocation(initLocationPicker, function(e) {
         switch(e.code) {
             case 1: $('#ahref-locate-me').replaceWith('Getting your location: permission denied'); break;
             case 2: $('#ahref-locate-me').replaceWith('Getting your location: position unavailable'); break;
             case 3: $('#ahref-locate-me').replaceWith('Getting your location: timeout'); break;
+            default: $('#ahref-locate-me').replaceWith('Geolocation is not supported by this browser'); break;
         }
         initLocationPicker(defaultLocation);
     });
-  } else {
-    $('#ahref-locate-me').replaceWith("Geolocation is not supported by this browser");
-    initLocationPicker(defaultLocation);
-  }
-  return false;
+    return false;
 }
 
 $(locateMe);
 
-function submitMe() {
-    grecaptcha.execute('{{ recaptcha_key }}', {action: 'report'}).then(function(token) {
-        var pos = window.locationPickerObj.getMarkerPosition();
-        $('#report-form')
-            .append('<input type="hidden" name="recaptcha" value="' + token + '">')
-            .append('<input type="hidden" name="latitude" value="' + pos.lat + '">')
-            .append('<input type="hidden" name="longitude" value="' + pos.lng + '">')
-            .submit();
+$(function() {
+    $('#ahref-submit').on('click', function(event) {
+        var form = document.getElementById('report-form');
+        if (form.checkValidity()) {
+            grecaptcha.execute('{{ recaptcha_key }}', {action: 'signup'}).then(function(token) {
+                var pos = window.locationPickerObj.getMarkerPosition();
+                $('#report-form')
+                    .append('<input type="hidden" name="recaptcha" value="' + token + '">')
+                    .append('<input type="hidden" name="latitude" value="' + pos.lat + '">')
+                    .append('<input type="hidden" name="longitude" value="' + pos.lng + '">')
+                    .submit();
+            });
+        }
+        form.classList.add('was-validated');
+        return false;
     });
-    return false;
-}
+});
 
 </script>
 {% endblock %}

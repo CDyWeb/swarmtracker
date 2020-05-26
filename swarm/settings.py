@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auth0_client',
     'swarm',
     'home',
     'report',
@@ -131,12 +130,6 @@ STATIC_URL = '/static/'
 
 APPEND_SLASH = False
 
-AUTH0_DOMAIN = 'cdyweb.auth0.com'
-AUTH0_AUDIENCE = 'https://cdyweb.auth0.com/userinfo'
-AUTH0_CLIENT_ID = os.getenv('AUTH0_CLIENT_ID', '')
-AUTH0_SECRET = os.getenv('AUTH0_SECRET', '')
-AUTH0_FORCE_HTTPS = os.getenv('SECURE_SSL_REDIRECT', '1') == '1'
-
 MAPQUESTAPI_KEY = os.getenv('MAPQUESTAPI_KEY', '')
 
 RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY', '')
@@ -147,3 +140,5 @@ CLOUDINARY={
     'api_key': os.getenv('CLOUDINARY_API_KEY', ''),
     'api_secret': os.getenv('CLOUDINARY_API_SECRET', ''),
 }
+
+SESSION_COOKIE_NAME = 'sid'

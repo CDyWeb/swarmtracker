@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h4>Catch a Swarm</h4>
+    <p>
+        Sign up as a swarm catcher below
+    </p>
+
+    {% if errors %}
+    <div class="card border-danger">
+    <div class="card-header bg-danger">
+        Errors
+        </div><div class="card-body">
+          {% for e in errors %}
+          <dd>{{ e }}</dd>
+          {% endfor %}
+      </div>
+    </div>
+    <p>&nbsp;</p>
+    {% endif %}
+    <form method="post" id="signup-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="">Name <sup class="text-danger">*</sup></label>
+            <input type="text" class="form-control" id="" placeholder="Your name" required value="{{ signup.name }}" name="name">
+        </div>
+        <div class="form-group">
+            <label for="">Email <sup class="text-danger">*</sup></label>
+            <input type="email" class="form-control" id="" placeholder="Your email address" required value="{{ signup.email }}" name="email">
+        </div>
+        <div class="form-check" style="margin-bottom: 1em">
+            <input type="checkbox" name="email_new_swarm" id="email_new_swarm" class="form-check-input" checked="checked">
+            <label class="form-check-label" for="email_new_swarm">Enable swarm e-mail notifications</label>
+        </div>
+        <div class="form-group">
+            <label for="">Phone</label>
+            <input type="tel" class="form-control" id="" placeholder="Your phone number" value="{{ signup.phone }}" name="phone">
+        </div>
+        <div class="form-group">
+            <label for="">Postal code <sup class="text-danger">*</sup></label>
+            <input pattern="[\w][\d][\w][\d][\w][\d]" autocapitalize="true"  type="text" class="form-control" id="input-zip" placeholder="Your postal code" required value="{{ signup.zip }}" name="zip">
+        </div>
+        <div class="form-group">
+            <label for="">Max distance <sup class="text-danger">*</sup></label>
+            <select name="max_distance_km" class="form-control col-sm-2">
+                <option {% if signup.max_distance_km == 5 %}selected{% endif %} value="5">5 KM</option>
+                <option {% if signup.max_distance_km == 10 %}selected{% endif %} value="10">10 KM</option>
+                <option {% if signup.max_distance_km == 20 %}selected{% endif %} value="20">20 KM</option>
+                <option {% if signup.max_distance_km == 50 %}selected{% endif %} value="50">50 KM</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <a href="#" class="btn btn-lg btn-primary" id="ahref-submit">
+                Submit
+            </a>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
+<script>
+$(function() {
+    $('#input-zip').on('blur', function() {
+        $(this).val($(this).val().toUpperCase().replace(' ', ''));
+    });
+    $('#ahref-submit').on('click', function(event) {
+        var form = document.getElementById('signup-form');
+        if (form.checkValidity()) {
+            grecaptcha.execute('{{ recaptcha_key }}', {action: 'signup'}).then(function(token) {
+                $('#signup-form')
+                    .append('<input type="hidden" name="recaptcha" value="' + token + '">')
+                    .submit();
+            });
+        }
+        form.classList.add('was-validated');
+        return false;
+    });
+});
+</script>
+{% endblock %}

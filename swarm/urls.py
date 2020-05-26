@@ -9,7 +9,6 @@ urlpatterns += [
     url(r'', include('home.urls')),
     url(r'', include('report.urls')),
     url(r'', include('catch.urls')),
-    url(r'', include('auth0_client.urls')),
 ]
 
 # if settings.DEBUG and os.getenv('GAE_INSTANCE'):
