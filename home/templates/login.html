@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h4>Login</h4>
+
+    {% if errors %}
+    <div class="card border-danger">
+    <div class="card-header bg-danger">
+        Errors
+        </div><div class="card-body">
+          {% for e in errors %}
+          <dd>{{ e }}</dd>
+          {% endfor %}
+      </div>
+    </div>
+    <p>&nbsp;</p>
+    {% endif %}
+    <form method="post" id="login-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="">Email <sup class="text-danger">*</sup></label>
+            <input type="email" class="form-control" id="" placeholder="Your email address" required value="" name="email">
+        </div>
+        <div class="form-group">
+            <label for="">Password <sup class="text-danger">*</sup></label>
+            <input type="password" class="form-control" id="" placeholder="Your password" required value="" name="password">
+        </div>
+
+        <div class="form-group">
+            <a href="#" class="btn btn-lg btn-primary" id="ahref-submit">
+                Submit
+            </a>
+        </div>
+    </form>
+{% endblock %}
+
+{% block script %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
+<script>
+$(function() {
+    $('#ahref-submit').on('click', function(event) {
+        var form = document.getElementById('login-form');
+        if (form.checkValidity()) {
+            grecaptcha.execute('{{ recaptcha_key }}', {action: 'login'}).then(function(token) {
+                $('#login-form')
+                    .append('<input type="hidden" name="recaptcha" value="' + token + '">')
+                    .submit();
+            });
+        }
+        form.classList.add('was-validated');
+        return false;
+    });
+});
+</script>
+{% endblock %}

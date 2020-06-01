@@ -73,13 +73,10 @@ class ReportView(RecaptchaView):
 
             return redirect('report-done')
 
-        errors = []
-        for f, error in form.errors.items():
-            errors.append(f'{f}: ' + ', '.join(error))
         return render(request, 'report.html', context={
             'recaptcha_key': settings.RECAPTCHA_KEY,
             'report': form.instance,
-            'errors': errors
+            'errors': [f'{f}: ' + ', '.join(error) if f != '__all__' else ', '.join(error) for f, error in form.errors.items()]
         })
 
 

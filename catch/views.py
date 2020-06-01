@@ -9,12 +9,14 @@ from django.views import View
 from report.models import SwarmReport
 from swarm import RecaptchaView
 from swarm.models import SwarmUser
+from django.contrib.auth import login as django_login
 
 
 class SignupForm(ModelForm):
     def _post_clean(self):
         if SwarmUser.objects.filter(email=self.cleaned_data['email']).only('email').count() > 0:
             self.add_error('email', 'This email is already registered')
+        return super()._post_clean()
 
     class Meta:
         fields = '__all__'
@@ -38,15 +40,14 @@ class SignupView(RecaptchaView):
 
             try:
                 map_key = settings.MAPQUESTAPI_KEY
-                resp = requests.get(
-                    f'http://open.mapquestapi.com/geocoding/v1/address?'
-                    f'key={map_key}&location={new_user.zip}'
-                )
+                map_url = f'https://www.mapquestapi.com/geocoding/v1/address?key={map_key}&inFormat=kvp&outFormat=json&location={new_user.zip}%2CCanada&thumbMaps=false'
+                print(map_url)
+                resp = requests.get(map_url)
                 resp.raise_for_status()
-                lat_lng = json.loads(resp.content).get('results', [])[0].get('locations', [])[0].get('latLng', {})
-                new_user.latitude = lat_lng.get('lat')
-                new_user.longitude = lat_lng.get('lng')
-                print(lat_lng)
+                location = json.loads(resp.content).get('results', [])[0].get('locations', [])[0]
+                new_user.latitude = location.get('latLng', {}).get('lat')
+                new_user.longitude = location.get('latLng', {}).get('lng')
+                print(location)
             except:
                 pass
 
@@ -55,15 +56,20 @@ class SignupView(RecaptchaView):
             new_user.password = make_password(new_user.zip)
             new_user.save()
 
+            django_login(request, new_user)
+
             return redirect('signup-done')
 
-        errors = []
-        for f, error in form.errors.items():
-            errors.append(f'{f}: ' + ', '.join(error))
         return render(request, 'signup.html', context={
             'recaptcha_key': settings.RECAPTCHA_KEY,
             'signup': form.data,
-            'errors': errors
+            'errors': [f'{f}: ' + ', '.join(error) if f != '__all__' else ', '.join(error) for f, error in form.errors.items()]
+        })
+
+
+class SignupDoneView(View):
+    def get(self, request):
+        return render(request, 'signup-done.html', context={
         })
 
 
