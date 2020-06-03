@@ -45,6 +45,7 @@ class ReportView(RecaptchaView):
             location='',
         )
         return render(request, 'report.html', context={
+            'map_key': settings.GOOGLE_API_KEY,
             'recaptcha_key': settings.RECAPTCHA_KEY,
             'report': report
         })
@@ -73,6 +74,7 @@ class ReportView(RecaptchaView):
             return redirect('report-done')
 
         return render(request, 'report.html', context={
+            'map_key': settings.GOOGLE_API_KEY,
             'recaptcha_key': settings.RECAPTCHA_KEY,
             'report': form.instance,
             'errors': [f'{f}: ' + ', '.join(error) if f != '__all__' else ', '.join(error) for f, error in form.errors.items()]

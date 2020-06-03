@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'', include('home.urls')),
     url(r'', include('report.urls')),
     url(r'', include('catch.urls')),
+    url(r'', include('map.urls')),
     path('logout', logout),
 ]
 

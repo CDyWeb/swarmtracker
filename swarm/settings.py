@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'home',
     'report',
     'catch',
+    'map',
     'cloudinary',
 ]
 
@@ -130,6 +131,7 @@ STATIC_URL = '/static/'
 
 APPEND_SLASH = False
 
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
 MAPQUESTAPI_KEY = os.getenv('MAPQUESTAPI_KEY', '')
 
 RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY', '')

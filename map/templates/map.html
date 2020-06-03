@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h4>Coverage Map</h4>
+    <p>The map below shows the coverage area of our swarm catchers.</p>
+    <div id="map" style="height: 600px"></div>
+{% endblock %}
+{% block script %}
+<script>
+function drawMarker(lat, lng, icon) {
+    return new google.maps.Marker({
+        position: {lat: lat, lng: lng},
+        map: window.map,
+        icon: icon
+    });
+}
+
+function addInfo(marker, content) {
+    marker.addListener('click', function() {
+        (new google.maps.InfoWindow({
+            content: content
+        })).open(window.map, marker);
+    })
+}
+
+function drawCircle(lat, lng, km) {
+    new google.maps.Circle({
+        strokeColor: '#008',
+        strokeOpacity: 0.3,
+        strokeWeight: 2,
+        fillColor: '#66F',
+        fillOpacity: 0.35,
+        map: window.map,
+        center: {lat: lat, lng: lng},
+        radius: km * 1000
+      });
+}
+
+function initMap() {
+    var catcher_icon = {
+        url: 'data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTAwMCAxMDAwIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxMDAwIDEwMDAiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8Zz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAwMDAwMCw1MTEuMDAwMDAwKSBzY2FsZSgwLjEwMDAwMCwtMC4xMDAwMDApIj48cGF0aCBkPSJNNDY1Ny44LDUwMDcuNGMtMzguMi00LTE1Ny0xOC4xLTI2MS43LTMwLjJDMjM0OC43LDQ3NDMuNyw2MjMuNCwzMTY1LjQsMjAwLjcsMTEzNi4xQzEyMC4xLDc0Ny42LDEwMCw1NDAuMiwxMDAsMTA3LjRjMC00MzIuOCwyMC4xLTY0MC4yLDEwMC43LTEwMjguN0M1OTEuMi0yNzk3LjUsMjA5NS00MzAxLjQsMzk3MS4zLTQ2OTEuOWMzODguNS04MC41LDU5NS45LTEwMC43LDEwMjguNy0xMDAuN2M0MzIuOCwwLDY0MC4yLDIwLjEsMTAyOC43LDEwMC43YzE4NzYuMiwzOTAuNiwzMzgwLjEsMTg5NC40LDM3NzAuNiwzNzcwLjZDOTg3OS45LTUzMi44LDk5MDAtMzI1LjQsOTkwMCwxMDcuNGMwLDQzMi44LTIwLjEsNjQwLjItMTAwLjcsMTAyOC43Qzk1NzkuOSwyMTk1LDg5ODYsMzE3Ny41LDgxNTAuNiwzODcyYy03MTguNyw1OTkuOS0xNTM0LDk2MC4zLTI0NzYuMiwxMDk5LjJDNTQ3OS4xLDQ5OTkuNCw0Nzk4LjcsNTAyMy41LDQ2NTcuOCw1MDA3LjR6IE01Njc0LjQsNDUyOC4zYzkzMC0xNDksMTc0Ny40LTU1NS42LDI0MjEuOC0xMjA3LjljNDA0LjctMzkyLjYsNjU2LjMtNzM0LjgsOTA4LTEyNDAuMWMyMTMuNC00MjguOCwzNDAuMi04MjkuNCw0MTguNy0xMzEwLjVjNDguMy0yOTUuOSw0OC4zLTEwMTQuNiwwLTEzMTYuNmMtMTQ2LjktOTM2LjEtNTQ5LjYtMTc1NS41LTExOTEuOC0yNDIzLjhjLTcwMC42LTcyOC43LTE1NjYuMi0xMTgxLjctMjU2OC44LTEzNDQuOGMtMjk1LjktNDguMy0xMDE0LjYtNDguMy0xMzE2LjYsMGMtNzUyLjksMTE4LjgtMTQwNS4yLDM5MC42LTIwMjMuMiw4NDcuNWMtMjQ1LjYsMTgxLjItNzE2LjcsNjUyLjItODk3LjksODk3LjljLTQ1Myw2MTQtNzI2LjcsMTI2NC4yLTg0Ny41LDIwMTcuMmMtNDguMywyOTcuOS00OC4zLDEwMTYuNiwwLDEzMTQuNmMxMTguOCw3NTcsMzkwLjYsMTQwMy4yLDg0Ny41LDIwMjMuMmMxODEuMiwyNDUuNiw2NTIuMyw3MTYuNyw4OTcuOSw4OTcuOWM2OTQuNSw1MTMuNCwxNDE5LjMsNzg5LjEsMjMwNSw4ODEuOEM0Nzk4LjcsNDU4Mi42LDU0ODEuMSw0NTU4LjUsNTY3NC40LDQ1MjguM3oiLz48cGF0aCBkPSJNNDc2OC41LDI0MzguNmMtMzI4LjEtNjIuNC02NjguNC0zMzAuMS04MTUuMy02NDQuMmMtMjE1LjQtNDYzLTEzMC45LTk1Ni4yLDIyOS41LTEzMTYuNmMyMzMuNS0yMzMuNSw0ODMuMi0zMzguMiw4MDcuMy0zNDAuMmMzMjguMSwwLDU3My44LDk2LjYsODEzLjMsMzIyLjFjMzc0LjUsMzU0LjMsNDY3LjEsODg3LjgsMjMxLjUsMTM1Ni45QzU4MDMuMiwyMjgzLjYsNTI4My44LDI1MzcuMyw0NzY4LjUsMjQzOC42eiIvPjxwYXRoIGQ9Ik00Nzc0LjUtMjc1LjFjLTc3My0xMzAuOC0xNDEzLjItOTE2LTE1NTQuMS0xOTA2LjVsLTEyLjEtODYuNkg1MDAwaDE3OTEuN2wtMTQuMSw5Ni42Yy0yMi4xLDE4MS4yLTEyMi44LDUzNy41LTIwMS4zLDcxOC43Yy00Mi4zLDEwMC43LTEyOC44LDI1OS43LTE5MS4zLDM1NC4zQzU5ODguNC00ODguNSw1MzcyLjQtMTc0LjQsNDc3NC41LTI3NS4xeiIvPjwvZz48L2c+Cjwvc3ZnPgo=',
+        scaledSize: new google.maps.Size(32, 32),
+        anchor: new google.maps.Point(16, 16),
+    };
+    // Create the map.
+    window.map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 9,
+        center: {lat: 44.4, lng: -76.4860},
+        mapTypeId: 'terrain'
+    });
+    {% for u in catchers %}
+    drawCircle({{ u.latitude  }}, {{ u.longitude }}, {{u.max_distance_km}});
+    {% endfor %}
+    {% for u in catchers %}
+    var marker = drawMarker({{ u.latitude  }}, {{ u.longitude }}, catcher_icon);
+    {% if request.user.is_authenticated %}
+    addInfo(marker, '{{ u.full_name }}');
+    {% endif %}
+    {% endfor %}
+
+}
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ map_key }}&callback=initMap"></script>
+{% endblock %}
