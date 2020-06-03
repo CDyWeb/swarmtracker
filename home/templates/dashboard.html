@@ -1,5 +1,29 @@
 {% extends 'base.html' %}
 {% block main %}
     <h4>Dashboard</h4>
-    <p>Nothing here yet</p>
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card border-dark">
+            <div class="card-header bg-light">
+            My Swarms
+            </div><div class="card-body">
+                No swarm data found
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card border-dark">
+            <div class="card-header bg-light">
+            {{ request.user.full_name }}
+            </div><div class="card-body">
+              <p><b>Email</b>: {{ request.user.email }}</p>
+              <p><b>Phone</b>: {{ request.user.phone }}</p>
+              <p><b>Postal code</b>: {{ request.user.zip }}</p>
+              <p><b>Max distance</b>: {{ request.user.max_distance_km }} KM</p>
+                <p class="text-right"><small>
+                    <a href="/profile">Edit your information</a>
+                </small></p>
+          </div>
+        </div>
+</div>
 {% endblock %}

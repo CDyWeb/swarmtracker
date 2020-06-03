@@ -33,7 +33,7 @@ class LoginView(View):
             )
             if user:
                 login(request, user)
-                return redirect('home')
+                return redirect('dashboard')
 
         form.add_error(None, 'Login failed')
         return render(request, 'login.html', context={
