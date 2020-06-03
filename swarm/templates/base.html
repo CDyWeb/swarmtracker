@@ -27,6 +27,16 @@
                 </div>
             </div>
             <hr>
+
+            {% if messages %}
+            <div class="card border-info bg-light">
+              <div class="card-body">{% for message in messages %}
+                <dd{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</dd>
+              {% endfor %}</div>
+            </div>
+            <p>&nbsp;</p>
+            {% endif %}
+
             {% block main %}
             {% endblock %}
             {% endblock %}

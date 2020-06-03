@@ -2,6 +2,7 @@ import json
 
 import requests
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
@@ -12,16 +13,40 @@ from swarm.models import SwarmUser
 from django.contrib.auth import login as django_login
 
 
-class SignupForm(ModelForm):
+class ProfileForm(ModelForm):
+    class Meta:
+        fields = ('full_name', 'email', 'phone', 'email_new_swarm', 'zip', 'max_distance_km')
+        model = SwarmUser
+
+
+class SignupForm(ProfileForm):
     def _post_clean(self):
         if SwarmUser.objects.filter(email=self.cleaned_data['email']).only('email').count() > 0:
             self.add_error('email', 'This email is already registered')
         return super()._post_clean()
 
-    class Meta:
-        fields = '__all__'
-        exclude = ['date_joined', 'username', 'password']
-        model = SwarmUser
+
+class ProfileView(View):
+    def get(self, request):
+        if not request.user or not request.user.is_authenticated:
+            return redirect('home')
+        return render(request, 'profile.html', context={
+            'instance': request.user,
+            'messages': messages.get_messages(request)
+        })
+
+    def post(self, request):
+        if not request.user or not request.user.is_authenticated:
+            return redirect('home')
+        form = ProfileForm(instance=request.user, data=request.POST.dict())
+        if form.is_valid():
+            form.save()
+            messages.info(request, 'You changes have been saved')
+            return redirect(request.path)
+        return render(request, 'signup.html', context={
+            'instance': form.data,
+            'errors': [f'{f}: ' + ', '.join(error) if f != '__all__' else ', '.join(error) for f, error in form.errors.items()]
+        })
 
 
 class SignupView(RecaptchaView):
@@ -30,7 +55,8 @@ class SignupView(RecaptchaView):
             return redirect('swarms')
 
         return render(request, 'signup.html', context={
-            'recaptcha_key': settings.RECAPTCHA_KEY
+            'recaptcha_key': settings.RECAPTCHA_KEY,
+            'instance': SwarmUser(email_new_swarm=True)
         })
 
     def post(self, request):
@@ -62,7 +88,7 @@ class SignupView(RecaptchaView):
 
         return render(request, 'signup.html', context={
             'recaptcha_key': settings.RECAPTCHA_KEY,
-            'signup': form.data,
+            'instance': form.data,
             'errors': [f'{f}: ' + ', '.join(error) if f != '__all__' else ', '.join(error) for f, error in form.errors.items()]
         })
 

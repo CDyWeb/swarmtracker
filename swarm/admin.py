@@ -5,4 +5,4 @@ from swarm.models import SwarmUser
 
 @admin.register(SwarmUser)
 class SwarmUserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'full_name', 'email', 'phone', 'zip')

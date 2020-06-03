@@ -1,16 +1,12 @@
 {% extends 'base.html' %}
 {% block main %}
-    <h4>Catch a Swarm</h4>
-    <p>
-        Sign up as a swarm catcher below
-    </p>
+    <h4>Your profile</h4>
 
     {% include '_user_form.html' %}
 
 {% endblock %}
 
 {% block script %}
-<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
 <script>
 $(function() {
     $('#input-zip').on('blur', function() {
@@ -19,11 +15,7 @@ $(function() {
     $('#ahref-submit').on('click', function(event) {
         var form = document.getElementById('signup-form');
         if (form.checkValidity()) {
-            grecaptcha.execute('{{ recaptcha_key }}', {action: 'signup'}).then(function(token) {
-                $('#signup-form')
-                    .append('<input type="hidden" name="recaptcha" value="' + token + '">')
-                    .submit();
-            });
+            $('#signup-form').submit();
         }
         form.classList.add('was-validated');
         return false;

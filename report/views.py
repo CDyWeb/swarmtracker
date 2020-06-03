@@ -36,7 +36,6 @@ class ReportForm(ModelForm):
         fields = '__all__'
         model = SwarmReport
 
-
 class ReportView(RecaptchaView):
     def get(self, request):
         user: User = get_user(request)
