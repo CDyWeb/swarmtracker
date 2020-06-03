@@ -42,7 +42,7 @@ class SwarmReport(models.Model):
     {"type": "s", 
     "latLng": {"lat": 44.22315, "lng": -76.49395}, 
     "linkId": "0", 
-    "mapUrl": "http://open.mapquestapi.com/staticmap/v5/map?key=LrFMpHybXXi2Tc5IjY6fzyZxmizTCAKd&type=map&size=225,160&locations=44.22315048127559,-76.49394972451707|marker-sm-50318A-1&scalebar=true&zoom=15&rand=1435158634", 
+    "mapUrl": "http://open.mapquestapi.com/staticmap/v5/map?key=...&type=map&size=225,160&locations=44.22315048127559,-76.49394972451707|marker-sm-50318A-1&scalebar=true&zoom=15&rand=1435158634", 
     "street": "71 King Street West", 
     "dragPoint": false, 
     "adminArea1": "CA", 
